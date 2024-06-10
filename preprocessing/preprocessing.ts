@@ -567,6 +567,20 @@ function isMCPEVersion(value: string) {
   return value.match(MCPE_VERSION_REGEX) != null;
 }
 
+function getMCPEVersion(value: string) {
+  const result = {
+    major: 0,
+    minor: 0,
+    patch: 0
+  };
+  const match = value.match(MCPE_VERSION_REGEX);
+  if (match == null) return result;
+  result.major = Number(match.groups!['major']);
+  result.minor = Number(match.groups!['minor']);
+  result.patch = Number(match.groups!['patch']) ?? 0;
+  return result;
+}
+
 function getMCPEVersionNumerically(value: string) {
   const match = value.match(MCPE_VERSION_REGEX);
   if (match == null) return -1;
@@ -585,8 +599,15 @@ if (import.meta.main) {
     }
     return [false, undefined];
   });
-  const preprocessor = new Preprocessor(context);
-  context.add(createDefine('MCPE_CURRENT', 'target_version' in settings ? getMCPEVersionNumerically(settings['target_version']) : 0));
+
+  const targetVersion = 'target_version' in settings ? settings['target_version'] : 'MCPE_0_0';
+  const targetMCPEVersion = getMCPEVersion(targetVersion);
+
+  const preprocessor = new Preprocessor(context, 'include_paths' in settings && Array.isArray(settings['include_paths']) ? settings['include_paths'] : []);
+  context.add(createDefine('MCPE_CURRENT', getMCPEVersionNumerically(targetVersion)));
+  context.add(createDefine('MCPE_CURRENT_MAJOR', targetMCPEVersion.major));
+  context.add(createDefine('MCPE_CURRENT_MINOR', targetMCPEVersion.minor));
+  context.add(createDefine('MCPE_CURRENT_PATCH', targetMCPEVersion.patch));
 
   for (const pack of ['./BP', './RP']) {
     if (!existsSync(pack)) continue;
