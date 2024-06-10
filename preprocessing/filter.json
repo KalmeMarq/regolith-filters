@@ -1,0 +1,10 @@
+{
+  "description": "Use C like directives in JSONUI, preferably, or JSON files.",
+  "filters": [
+    {
+      "name": "Preprocessing",
+      "runWith": "deno",
+      "script": "./preprocessing.ts"
+    }
+  ]
+}
