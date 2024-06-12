@@ -1,0 +1,9 @@
+{
+  "description": "Write .lang files with JSON.",
+  "filters": [
+    {
+      "runWith": "deno",
+      "script": "./lang_json.ts"
+    }
+  ]
+}
